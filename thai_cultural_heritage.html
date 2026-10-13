@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>มรดกสยาม | Thai Cultural Heritage</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Prompt & Noto Serif Thai -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind Theme Configuration & Custom CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        thaired: '#8B0000',
+                        thairedhover: '#6A0000',
+                        thaigold: '#D4AF37',
+                        thaigoldlight: '#F3E5AB',
+                        thaigolddark: '#AA771C',
+                        thaicream: '#FAF7F2',
+                        thaidark: '#1C1917',
+                        thaicard: '#26221F'
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                        serif: ['Noto Serif Thai', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Gold metallic gradient text & backgrounds */
+        .gold-gradient {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+        }
+        .gold-gradient-soft {
+            background: linear-gradient(135deg, #D4AF37 0%, #F3E5AB 50%, #AA771C 100%);
+        }
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #FFF8DC 40%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hero Dark Overlay Banner */
+        .hero-bg {
+            background: linear-gradient(rgba(28, 25, 23, 0.82), rgba(139, 0, 0, 0.88)), 
+                        url('https://www.thailandretreats.com/imagefolder/BP062.jpgbig.jpg') center/cover no-repeat fixed;
+        }
+
+        /* Thai Pattern subtle background */
+        .thai-pattern-bg {
+            background-color: #FAF7F2;
+            background-image: radial-gradient(#D4AF37 0.75px, transparent 0.75px), radial-gradient(#D4AF37 0.75px, #FAF7F2 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            background-opacity: 0.15;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(28, 25, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1C1917;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+
+        /* Pulse animation for premium badge */
+        @keyframes subtle-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.6); }
+        }
+        .gold-glow {
+            animation: subtle-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-thaicream text-thaidark flex flex-col min-h-screen font-sans selection:bg-thaigold selection:text-thaidark">
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm pointer-events-none"></div>
+
+    <!-- VIDEO PLAYER MODAL (FOR DASHBOARD EXCLUSIVE CONTENT) -->
+    <div id="video-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-thaidark rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-thaigold/40 flex flex-col">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-stone-800 bg-stone-900">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+                    <h3 id="video-modal-title" class="text-lg font-bold text-thaigoldlight">กำลังรับชมสารคดีพิเศษ</h3>
+                </div>
+                <button onclick="closeVideoModal()" class="text-stone-400 hover:text-white text-xl p-1 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="relative bg-black aspect-video flex items-center justify-center group overflow-hidden">
+                <img id="video-modal-poster" src="" class="w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+                <!-- Interactive Simulated Player -->
+                <div class="absolute text-center space-y-4 p-6">
+                    <button id="simulated-play-btn" onclick="toggleVideoPlayState()" class="w-20 h-20 rounded-full gold-gradient flex items-center justify-center text-thaidark text-3xl shadow-2xl hover:scale-110 transition transform">
+                        <i id="play-icon" class="fas fa-play ml-1"></i>
+                    </button>
+                    <p id="video-status-text" class="text-stone-300 font-medium text-sm bg-black/60 px-4 py-1.5 rounded-full backdrop-blur border border-white/10 inline-block">
+                        กดปุ่มเพื่อเริ่มเล่นสื่อวิดีโอระดับความคมชัด 4K
+                    </p>
+                </div>
+                <div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black to-transparent flex items-center gap-4">
+                    <span id="video-time" class="text-xs text-stone-300 font-mono">00:00 / 45:00</span>
+                    <div class="flex-grow bg-stone-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="video-progress" class="bg-thaigold h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <i class="fas fa-volume-up text-stone-300 text-sm"></i>
+                    <i class="fas fa-expand text-stone-300 text-sm cursor-pointer hover:text-thaigold"></i>
+                </div>
+            </div>
+            <div class="p-6 bg-stone-900 space-y-2">
+                <p id="video-modal-desc" class="text-sm text-stone-300 leading-relaxed"></p>
+                <div class="flex items-center gap-4 pt-2 text-xs text-stone-400">
+                    <span><i class="fas fa-eye text-thaigold mr-1"></i> เฉพาะสมาชิกมรดกสยาม</span>
+                    <span><i class="fas fa-shield-alt text-emerald-400 mr-1"></i> เสียงพากย์ไทย/คำบรรยายไทย</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CULTURE DETAIL MODAL -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-thaigold/30 max-h-[92vh] flex flex-col animate-fade-in">
+            <div class="relative h-72 sm:h-96 overflow-hidden">
+                <img id="modal-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-thaired transition border border-white/20">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="absolute bottom-6 left-6 right-6 text-white space-y-2">
+                    <span id="modal-cat-badge" class="px-3.5 py-1 bg-thaired text-white text-xs rounded-full font-semibold tracking-wide uppercase shadow">
+                        หมวดหมู่
+                    </span>
+                    <h3 id="modal-detail-title" class="text-2xl sm:text-3xl font-bold font-serif leading-tight"></h3>
+                </div>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-4 text-stone-700 leading-relaxed font-sans">
+                <div id="modal-detail-body" class="whitespace-pre-line text-base space-y-3"></div>
+                <div class="pt-6 border-t border-stone-200 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center gap-2 text-xs text-stone-500">
+                        <i class="fas fa-bookmark text-thaigold"></i>
+                        <span>มรดกภูมิปัญญาทางวัฒนธรรมไทย</span>
+                    </div>
+                    <button id="modal-bookmark-btn" onclick="" class="px-5 py-2.5 rounded-full border border-thaigold text-amber-900 font-medium text-sm hover:bg-thaigold hover:text-thaidark transition flex items-center gap-2">
+                        <i class="far fa-heart"></i> บันทึกในรายการโปรด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR HEADER -->
+    <nav class="bg-thaidark text-white sticky top-0 z-40 border-b border-thaigold/40 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo -->
+                <a href="#" onclick="showSection('home'); return false;" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-full gold-gradient flex items-center justify-center text-thaidark font-bold text-xl shadow-md group-hover:scale-105 transition-transform duration-300">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold tracking-wider text-gold-gradient font-serif block leading-none">มรดกสยาม</span>
+                        <span class="text-[10px] text-stone-400 tracking-widest uppercase">Thai Cultural Heritage</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center gap-8">
+                    <button onclick="showSection('home')" class="nav-btn text-stone-200 hover:text-thaigold transition font-medium text-sm py-2 flex items-center gap-2">
+                        <i class="fas fa-home text-xs"></i> หน้าแรก
+                    </button>
+                    <button onclick="scrollToCulture()" class="nav-btn text-stone-200 hover:text-thaigold transition font-medium text-sm py-2 flex items-center gap-2">
+                        <i class="fas fa-compass text-xs"></i> มรดกวัฒนธรรม
+                    </button>
+                    <button onclick="checkDashboardAccess()" class="nav-btn text-stone-200 hover:text-thaigold transition font-medium text-sm py-2 flex items-center gap-2">
+                        <i class="fas fa-crown text-thaigold"></i> แดชบอร์ดสมาชิก
+                    </button>
+                </div>
+
+                <!-- Auth / User Controls -->
+                <div class="hidden md:flex items-center gap-3">
+                    <!-- Guest View -->
+                    <div id="guest-nav" class="flex items-center gap-3">
+                        <button onclick="openAuthModal('login')" class="px-4 py-2 border border-thaigold/60 text-thaigoldlight hover:bg-thaigold hover:text-thaidark transition rounded-xl font-medium text-sm shadow-sm">
+                            <i class="fas fa-sign-in-alt mr-1.5"></i> เข้าสู่ระบบ
+                        </button>
+                        <button onclick="openAuthModal('register')" class="px-5 py-2 bg-thaired hover:bg-thairedhover text-white transition rounded-xl font-medium text-sm shadow-md border border-red-700/50">
+                            <i class="fas fa-user-plus mr-1.5"></i> สมัครสมาชิก
+                        </button>
+                    </div>
+
+                    <!-- Logged-in User View -->
+                    <div id="user-nav" class="hidden items-center gap-3">
+                        <div onclick="showSection('dashboard')" class="flex items-center gap-2.5 bg-stone-800/90 hover:bg-stone-800 cursor-pointer px-3.5 py-1.5 rounded-full border border-thaigold/40 transition">
+                            <div class="w-8 h-8 rounded-full bg-thaigold text-thaidark font-bold flex items-center justify-center text-sm shadow" id="user-avatar">
+                                U
+                            </div>
+                            <span id="user-display-name" class="text-sm font-medium text-thaigoldlight max-w-[120px] truncate">คุณสมาชิก</span>
+                        </div>
+                        <button onclick="logout()" class="p-2 text-stone-400 hover:text-red-400 transition" title="ออกจากระบบ">
+                            <i class="fas fa-power-off text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-stone-300 hover:text-thaigold text-2xl p-2 focus:outline-none">
+                        <i id="mobile-menu-icon" class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-900 border-b border-stone-800 px-4 pt-3 pb-6 space-y-3">
+            <button onclick="showSection('home'); toggleMobileMenu();" class="block w-full text-left py-2.5 text-stone-200 hover:text-thaigold font-medium border-b border-stone-800">
+                <i class="fas fa-home text-thaigold w-6"></i> หน้าแรก
+            </button>
+            <button onclick="scrollToCulture(); toggleMobileMenu();" class="block w-full text-left py-2.5 text-stone-200 hover:text-thaigold font-medium border-b border-stone-800">
+                <i class="fas fa-compass text-thaigold w-6"></i> มรดกวัฒนธรรม
+            </button>
+            <button onclick="checkDashboardAccess(); toggleMobileMenu();" class="block w-full text-left py-2.5 text-stone-200 hover:text-thaigold font-medium border-b border-stone-800">
+                <i class="fas fa-crown text-thaigold w-6"></i> แดชบอร์ดสมาชิก
+            </button>
+
+            <!-- Mobile Auth Actions -->
+            <div id="mobile-guest-actions" class="pt-2 flex flex-col gap-2">
+                <button onclick="openAuthModal('login'); toggleMobileMenu();" class="w-full py-2.5 border border-thaigold text-thaigold font-medium rounded-xl text-center">
+                    <i class="fas fa-sign-in-alt mr-1"></i> เข้าสู่ระบบ
+                </button>
+                <button onclick="openAuthModal('register'); toggleMobileMenu();" class="w-full py-2.5 bg-thaired text-white font-medium rounded-xl text-center">
+                    <i class="fas fa-user-plus mr-1"></i> สมัครสมาชิก
+                </button>
+            </div>
+            <div id="mobile-user-actions" class="hidden pt-2 flex items-center justify-between bg-stone-800 p-3 rounded-xl border border-stone-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-thaigold text-thaidark font-bold flex items-center justify-center text-sm" id="mobile-user-avatar">
+                        U
+                    </div>
+                    <span id="mobile-user-name" class="text-sm font-medium text-white">คุณสมาชิก</span>
+                </div>
+                <button onclick="logout(); toggleMobileMenu();" class="text-red-400 hover:text-red-300 text-sm font-medium">
+                    <i class="fas fa-power-off mr-1"></i> ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow">
+        
+        <!-- HOME SECTION -->
+        <section id="sec-home">
+            <!-- Hero Banner -->
+            <div class="hero-bg text-white py-20 sm:py-28 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+                <div class="max-w-4xl mx-auto space-y-6 relative z-10">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-thaigold/20 text-thaigoldlight border border-thaigold/40 text-xs sm:text-sm font-medium tracking-wide shadow-lg backdrop-blur-md">
+                        <i class="fas fa-sparkles text-thaigold"></i> ศูนย์รวมภูมิปัญญาและเอกลักษณ์แห่งสยามประเทศ
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold font-serif leading-tight tracking-wide">
+                        สืบสานคุณค่า <span class="text-gold-gradient">วัฒนธรรมไทย</span> สู่สากล
+                    </h1>
+                    <p class="text-base sm:text-xl text-stone-200 font-light max-w-2xl mx-auto leading-relaxed">
+                        สัมผัสความวิจิตรตระการตาของอาหารไทย ศิลปะการแสดง ประเพณีอันทรงคุณค่า และผ้าไหมไทยโบราณ พร้อมสารคดีเอ็กซ์คลูซีฟสำหรับสมาชิก
+                    </p>
+                    <div class="pt-4 flex flex-wrap justify-center gap-4">
+                        <button onclick="scrollToCulture()" class="px-8 py-3.5 bg-thaigold hover:bg-yellow-500 text-thaidark font-semibold rounded-xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <i class="fas fa-compass"></i> สำรวจวัฒนธรรมไทย
+                        </button>
+                        <button onclick="openAuthModal('register')" id="hero-reg-btn" class="px-8 py-3.5 bg-thaired hover:bg-thairedhover border border-red-500/50 text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <i class="fas fa-crown text-thaigold"></i> สมัครสมาชิกพรีเมียมฟรี
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights Ticker Bar -->
+            <div class="bg-thaidark text-stone-300 py-3.5 border-y border-thaigold/30 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 flex justify-around items-center text-xs sm:text-sm gap-4 text-center">
+                    <div class="flex items-center gap-2"><i class="fas fa-award text-thaigold"></i> UNESCO World Cultural Heritage</div>
+                    <div class="hidden sm:flex items-center gap-2"><i class="fas fa-book-open text-thaigold"></i> คลังองค์ความรู้ 4 หมวดหลัก</div>
+                    <div class="flex items-center gap-2"><i class="fas fa-video text-thaigold"></i> สารคดีเอ็กซ์คลูซีฟระดับ 4K</div>
+                </div>
+            </div>
+
+            <!-- SEARCH & CATEGORY FILTER SECTION -->
+            <div id="culture-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 thai-pattern-bg">
+                <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+                    <span class="text-xs font-bold uppercase tracking-widest text-thaired">CULTURAL HERITAGE CATEGORIES</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold font-serif text-thaired">หมวดหมู่มรดกวัฒนธรรมไทย</h2>
+                    <div class="w-24 h-1 gold-gradient mx-auto rounded-full"></div>
+                    <p class="text-stone-600 text-sm sm:text-base">เลือกชมเนื้อหาตามหมวดหมู่ที่ท่านสนใจ หรือค้นหาคำสำคัญในคลังข้อมูล</p>
+                    
+                    <!-- Search Input -->
+                    <div class="mt-8 relative max-w-xl mx-auto">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                        <input type="text" id="search-input" onkeyup="filterCultureCards()" placeholder="ค้นหา เช่น ต้มยำกุ้ง, โขน, ลอยกระทง, ผ้าไหม..." 
+                            class="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-thaigold focus:border-transparent shadow-md text-sm bg-white">
+                        <button onclick="clearSearch()" id="clear-search-btn" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-sm">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex flex-wrap justify-center gap-2.5 mt-6">
+                        <button onclick="filterCategory('all', this)" class="cat-btn bg-thaired text-white px-5 py-2 rounded-full text-xs sm:text-sm font-medium shadow-md transition">
+                            <i class="fas fa-th-large mr-1.5"></i> ทั้งหมด
+                        </button>
+                        <button onclick="filterCategory('food', this)" class="cat-btn bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition">
+                            <i class="fas fa-utensils mr-1.5 text-amber-600"></i> อาหารไทย
+                        </button>
+                        <button onclick="filterCategory('art', this)" class="cat-btn bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition">
+                            <i class="fas fa-theater-masks mr-1.5 text-amber-700"></i> ศิลปะการแสดง
+                        </button>
+                        <button onclick="filterCategory('tradition', this)" class="cat-btn bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition">
+                            <i class="fas fa-water mr-1.5 text-emerald-700"></i> ประเพณีไทย
+                        </button>
+                        <button onclick="filterCategory('fabric', this)" class="cat-btn bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition">
+                            <i class="fas fa-scroll mr-1.5 text-purple-700"></i> ผ้าไทย
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CULTURE CARDS GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="culture-grid">
+                    
+                    <!-- Card 1: อาหารไทย -->
+                    <div class="culture-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 border border-stone-200 flex flex-col group relative" data-cat="food" data-title="ต้มยำกุ้ง tom yum goong อาหารไทย สมุนไพร" data-key="tom-yum">
+                        <div class="relative h-56 overflow-hidden bg-stone-900">
+                            <img src="https://hot-thai-kitchen.com/wp-content/uploads/2013/03/tom-yum-goong-blog.jpg" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/1C1917/D4AF37?text=ต้มยำกุ้ง';"
+                                 alt="ต้มยำกุ้ง" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-95">
+                            <span class="absolute top-3 left-3 bg-thaired text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow">
+                                <i class="fas fa-utensils mr-1"></i> อาหารไทย
+                            </span>
+                            <button onclick="toggleBookmark('tom-yum', event)" class="bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white hover:bg-thaigold hover:text-thaidark flex items-center justify-center transition" title="บันทึกในรายการโปรด">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold font-serif text-stone-800 mb-2 group-hover:text-thaired transition">ต้มยำกุ้ง (Tom Yum Goong)</h3>
+                            <p class="text-stone-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed">
+                                เมนูอาหารไทยยอดนิยมระดับโลก โดดเด่นด้วยรสชาติเผ็ด เปรี้ยว เค็ม หอมกลิ่นสมุนไพรสด เช่น ข่า ตะไคร้ ใบมะกรูด และมะนาวแท้
+                            </p>
+                            <div class="mt-auto pt-3 border-t border-stone-100 flex justify-between items-center">
+                                <span class="text-[11px] text-stone-500"><i class="fas fa-certificate text-thaigold mr-1"></i> มรดกภูมิปัญญา</span>
+                                <button onclick="openDetailModal('tom-yum')" class="text-thaired font-semibold text-xs sm:text-sm hover:underline flex items-center gap-1">
+                                    อ่านเพิ่มเติม <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: ศิลปะการแสดง -->
+                    <div class="culture-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 border border-stone-200 flex flex-col group relative" data-cat="art" data-title="นาฏศิลป์โขนชั้นสูง khon ศิลปะการแสดง รามเกียรติ์" data-key="khon">
+                        <div class="relative h-56 overflow-hidden bg-stone-900">
+                            <img src="https://cdn.royalgrandpalace.th/images/attractive/khon/slide_1_4.jpg" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/1C1917/D4AF37?text=การแสดงโขน';"
+                                 alt="การแสดงโขน" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-95">
+                            <span class="absolute top-3 left-3 bg-amber-600 text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow">
+                                <i class="fas fa-theater-masks mr-1"></i> ศิลปะการแสดง
+                            </span>
+                            <button onclick="toggleBookmark('khon', event)" class="bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white hover:bg-thaigold hover:text-thaidark flex items-center justify-center transition" title="บันทึกในรายการโปรด">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold font-serif text-stone-800 mb-2 group-hover:text-thaired transition">นาฏศิลป์โขนชั้นสูง</h3>
+                            <p class="text-stone-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed">
+                                ศิลปะการแสดงชั้นสูงของไทยที่ผสมผสานศาสตร์หลายแขนง ทั้งการเต้นรำ การพากย์ เครื่องแต่งกายประดิดประดอย และหัวโขนอันวิจิตร
+                            </p>
+                            <div class="mt-auto pt-3 border-t border-stone-100 flex justify-between items-center">
+                                <span class="text-[11px] text-stone-500"><i class="fas fa-crown text-thaigold mr-1"></i> UNESCO World Heritage</span>
+                                <button onclick="openDetailModal('khon')" class="text-thaired font-semibold text-xs sm:text-sm hover:underline flex items-center gap-1">
+                                    อ่านเพิ่มเติม <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: ประเพณีไทย -->
+                    <div class="culture-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 border border-stone-200 flex flex-col group relative" data-cat="tradition" data-title="ประเพณีลอยกระทง ยี่เป็ง loy krathong ประเพณีไทย" data-key="loy-krathong">
+                        <div class="relative h-56 overflow-hidden bg-stone-900">
+                            <img src="https://www.thailandretreats.com/imagefolder/BP062.jpgbig.jpg" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/1C1917/D4AF37?text=ประเพณีลอยกระทง';"
+                                 alt="ประเพณีลอยกระทง" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-95">
+                            <span class="absolute top-3 left-3 bg-emerald-700 text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow">
+                                <i class="fas fa-water mr-1"></i> ประเพณีไทย
+                            </span>
+                            <button onclick="toggleBookmark('loy-krathong', event)" class="bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white hover:bg-thaigold hover:text-thaidark flex items-center justify-center transition" title="บันทึกในรายการโปรด">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold font-serif text-stone-800 mb-2 group-hover:text-thaired transition">ประเพณีลอยกระทง & ยี่เป็ง</h3>
+                            <p class="text-stone-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed">
+                                ประเพณีโบราณในคืนวันเพ็ญเดือน 12 เพื่อขอขมาพระแม่คงคา บูชารอยพระพุทธบาท และปล่อยความทุกข์โศกไปกับสายน้ำและแผ่นฟ้า
+                            </p>
+                            <div class="mt-auto pt-3 border-t border-stone-100 flex justify-between items-center">
+                                <span class="text-[11px] text-stone-500"><i class="far fa-calendar-alt text-thaigold mr-1"></i> วันเพ็ญเดือน 12</span>
+                                <button onclick="openDetailModal('loy-krathong')" class="text-thaired font-semibold text-xs sm:text-sm hover:underline flex items-center gap-1">
+                                    อ่านเพิ่มเติม <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: ผ้าไทย -->
+                    <div class="culture-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 border border-stone-200 flex flex-col group relative" data-cat="fabric" data-title="ผ้าไหมไทยมัดหมี่ thai silk ผ้าไทย หัตถกรรม" data-key="thai-silk">
+                        <div class="relative h-56 overflow-hidden bg-stone-900">
+                            <img src="https://thailandfoundation.or.th/wp-content/uploads/2025/08/1-Thai-Silk-DTH-Travel.jpg" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/1C1917/D4AF37?text=ผ้าไหมไทย';"
+                                 alt="ผ้าไหมไทย" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-95">
+                            <span class="absolute top-3 left-3 bg-purple-700 text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow">
+                                <i class="fas fa-scroll mr-1"></i> ผ้าไทย & หัตถกรรม
+                            </span>
+                            <button onclick="toggleBookmark('thai-silk', event)" class="bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white hover:bg-thaigold hover:text-thaidark flex items-center justify-center transition" title="บันทึกในรายการโปรด">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-xl font-bold font-serif text-stone-800 mb-2 group-hover:text-thaired transition">ผ้าไหมไทยมัดหมี่</h3>
+                            <p class="text-stone-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed">
+                                หัตถศิลป์การทอผ้าอันทรงคุณค่า ลวดลายประณีตสะท้อนถึงเอกลักษณ์และภูมิปัญญาท้องถิ่นที่สืบทอดกันมาหลายชั่วอายุคน
+                            </p>
+                            <div class="mt-auto pt-3 border-t border-stone-100 flex justify-between items-center">
+                                <span class="text-[11px] text-stone-500"><i class="fas fa-hands text-thaigold mr-1"></i> งานหัตถกรรมมือ</span>
+                                <button onclick="openDetailModal('thai-silk')" class="text-thaired font-semibold text-xs sm:text-sm hover:underline flex items-center gap-1">
+                                    อ่านเพิ่มเติม <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Empty Search Result Alert -->
+                <div id="no-results" class="hidden text-center py-16 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-stone-200 text-stone-400 flex items-center justify-center text-2xl mx-auto">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <p class="text-lg font-medium text-stone-600">ไม่พบข้อมูลที่ตรงกับคำค้นหาของคุณ</p>
+                    <button onclick="clearSearch()" class="px-5 py-2 bg-thaired text-white rounded-xl text-xs font-semibold hover:bg-thairedhover transition">
+                        ล้างคำค้นหา
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD SECTION (FOR LOGGED IN MEMBERS) -->
+        <section id="sec-dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            
+            <!-- Member Hero Welcome Banner -->
+            <div class="bg-gradient-to-r from-thaidark via-stone-900 to-thaired text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-thaigold/40 relative overflow-hidden mb-12">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-[200px] text-thaigold pointer-events-none font-serif">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-3">
+                        <span class="bg-thaigold/20 text-thaigold px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-thaigold/40 gold-glow">
+                            <i class="fas fa-crown mr-1"></i> พรีเมียมเมมเบอร์
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-bold font-serif">ยินดีต้อนรับ, <span id="dash-user-name" class="text-gold-gradient">ท่านสมาชิก</span></h2>
+                        <p class="text-stone-300 text-sm sm:text-base max-w-xl leading-relaxed">
+                            คุณได้รับการปลดล็อกสิทธิ์เข้าถึงคลังสื่อสารคดีมรดกวัฒนธรรมไทยระดับ Exclusive และรายการบันทึกโปรด
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center gap-6 bg-black/50 px-6 py-4 rounded-2xl border border-white/10 backdrop-blur-md">
+                        <div class="text-center">
+                            <p class="text-[11px] text-stone-400">สถานะบัญชี</p>
+                            <p class="text-emerald-400 font-semibold text-sm flex items-center justify-center gap-1">
+                                <i class="fas fa-check-circle text-xs"></i> แอคทีฟ
+                            </p>
+                        </div>
+                        <div class="h-8 w-px bg-stone-700"></div>
+                        <div class="text-center">
+                            <p class="text-[11px] text-stone-400">สารคดีพรีเมียม</p>
+                            <p class="text-thaigold font-bold text-lg">3 เรื่องปลดล็อกแล้ว</p>
+                        </div>
+                        <div class="h-8 w-px bg-stone-700"></div>
+                        <div class="text-center">
+                            <p class="text-[11px] text-stone-400">รายการโปรด</p>
+                            <p id="dash-fav-count" class="text-white font-bold text-lg">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exclusive Documentaries Section -->
+            <div class="mb-14">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold font-serif text-thaired flex items-center gap-2">
+                            <i class="fas fa-film text-thaigold"></i> วิดีโอสารคดีพิเศษ (Exclusive Documentaries)
+                        </h3>
+                        <p class="text-stone-600 text-xs sm:text-sm">สารคดีเจาะลึกมรดกสยามความยาวสมบูรณ์ พร้อมภาพความคมชัดสูง 4K</p>
+                    </div>
+                    <span class="text-xs font-semibold text-thaigold bg-thaidark px-3 py-1.5 rounded-full border border-thaigold/30">
+                        <i class="fas fa-lock-open mr-1"></i> Member Only
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Doc 1 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-stone-200 flex flex-col group">
+                        <div class="relative h-52 overflow-hidden bg-stone-900">
+                            <img src="https://cdn.royalgrandpalace.th/images/attractive/khon/slide_1_4.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition flex items-center justify-center">
+                                <button onclick="openVideoModal('ความลับแห่งโขนพระราชทาน', 'https://cdn.royalgrandpalace.th/images/attractive/khon/slide_1_4.jpg', 'เจาะลึกเบื้องหลังการฝึกซ้อม ศิลปะการสร้างเครื่องโขนโบราณ และการสืบทอดนาฏศิลป์ชั้นสูงโดยครูช่างระดับครูศิลป์แผ่นดิน')" class="w-14 h-14 rounded-full gold-gradient text-thaidark flex items-center justify-center text-xl shadow-2xl hover:scale-110 transition">
+                                    <i class="fas fa-play ml-1"></i>
+                                </button>
+                            </div>
+                            <span class="absolute bottom-3 right-3 bg-black/80 text-white text-[11px] px-2.5 py-1 rounded-md font-mono">45:20 นาที</span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h4 class="font-bold text-lg text-stone-800 mb-2 group-hover:text-thaired transition">ความลับแห่งโขนพระราชทาน</h4>
+                            <p class="text-xs text-stone-600 mb-4 line-clamp-2 leading-relaxed">เจาะลึกเบื้องหลังการฝึกซ้อมและขั้นตอนการสร้างเครื่องโขนโบราณอันประณีต</p>
+                            <button onclick="openVideoModal('ความลับแห่งโขนพระราชทาน', 'https://cdn.royalgrandpalace.th/images/attractive/khon/slide_1_4.jpg', 'เจาะลึกเบื้องหลังการฝึกซ้อม ศิลปะการสร้างเครื่องโขนโบราณ และการสืบทอดนาฏศิลป์ชั้นสูงโดยครูช่างระดับครูศิลป์แผ่นดิน')" class="mt-auto w-full py-2.5 bg-stone-900 hover:bg-thaired text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-play-circle text-thaigold"></i> รับชมสารคดีฉบับเต็ม
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Doc 2 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-stone-200 flex flex-col group">
+                        <div class="relative h-52 overflow-hidden bg-stone-900">
+                            <img src="https://hot-thai-kitchen.com/wp-content/uploads/2013/03/tom-yum-goong-blog.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition flex items-center justify-center">
+                                <button onclick="openVideoModal('ตำนานรสไทยโบราณในสำรับวังหลวง', 'https://hot-thai-kitchen.com/wp-content/uploads/2013/03/tom-yum-goong-blog.jpg', 'ย้อนรอยสูตรต้มยำกุ้งและตำรับเครื่องแกงไทยโบราณจากบันทึกประวัติศาสตร์สมัยอยุธยาถึงรัตนโกสินทร์')" class="w-14 h-14 rounded-full gold-gradient text-thaidark flex items-center justify-center text-xl shadow-2xl hover:scale-110 transition">
+                                    <i class="fas fa-play ml-1"></i>
+                                </button>
+                            </div>
+                            <span class="absolute bottom-3 right-3 bg-black/80 text-white text-[11px] px-2.5 py-1 rounded-md font-mono">32:15 นาที</span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h4 class="font-bold text-lg text-stone-800 mb-2 group-hover:text-thaired transition">ตำนานรสไทยโบราณในสำรับวังหลวง</h4>
+                            <p class="text-xs text-stone-600 mb-4 line-clamp-2 leading-relaxed">ย้อนรอยสูตรต้มยำกุ้งโบราณและเครื่องแกงไทยจากบันทึกประวัติศาสตร์</p>
+                            <button onclick="openVideoModal('ตำนานรสไทยโบราณในสำรับวังหลวง', 'https://hot-thai-kitchen.com/wp-content/uploads/2013/03/tom-yum-goong-blog.jpg', 'ย้อนรอยสูตรต้มยำกุ้งและตำรับเครื่องแกงไทยโบราณจากบันทึกประวัติศาสตร์สมัยอยุธยาถึงรัตนโกสินทร์')" class="mt-auto w-full py-2.5 bg-stone-900 hover:bg-thaired text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-play-circle text-thaigold"></i> รับชมสารคดีฉบับเต็ม
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Doc 3 -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-stone-200 flex flex-col group">
+                        <div class="relative h-52 overflow-hidden bg-stone-900">
+                            <img src="https://thailandfoundation.or.th/wp-content/uploads/2025/08/1-Thai-Silk-DTH-Travel.jpg" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition flex items-center justify-center">
+                                <button onclick="openVideoModal('ร้อยเส้นสาย ผ้าไหมลายโบราณ', 'https://thailandfoundation.or.th/wp-content/uploads/2025/08/1-Thai-Silk-DTH-Travel.jpg', 'สัมผัสการฟื้นฟูลายผ้าไหมยกทองโบราณของครูช่างศิลปหัตถกรรมไทย พร้อมเทคนิคการมัดหมี่ชั้นสูง')" class="w-14 h-14 rounded-full gold-gradient text-thaidark flex items-center justify-center text-xl shadow-2xl hover:scale-110 transition">
+                                    <i class="fas fa-play ml-1"></i>
+                                </button>
+                            </div>
+                            <span class="absolute bottom-3 right-3 bg-black/80 text-white text-[11px] px-2.5 py-1 rounded-md font-mono">28:40 นาที</span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h4 class="font-bold text-lg text-stone-800 mb-2 group-hover:text-thaired transition">ร้อยเส้นสาย ผ้าไหมลายโบราณ</h4>
+                            <p class="text-xs text-stone-600 mb-4 line-clamp-2 leading-relaxed">การฟื้นฟูลายผ้าไหมยกทองโบราณและการมัดย้อมของครูช่างศิลปะ</p>
+                            <button onclick="openVideoModal('ร้อยเส้นสาย ผ้าไหมลายโบราณ', 'https://thailandfoundation.or.th/wp-content/uploads/2025/08/1-Thai-Silk-DTH-Travel.jpg', 'สัมผัสการฟื้นฟูลายผ้าไหมยกทองโบราณของครูช่างศิลปหัตถกรรมไทย พร้อมเทคนิคการมัดหมี่ชั้นสูง')" class="mt-auto w-full py-2.5 bg-stone-900 hover:bg-thaired text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-play-circle text-thaigold"></i> รับชมสารคดีฉบับเต็ม
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Bookmarks Section -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                <h3 class="text-xl font-bold font-serif text-stone-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-heart text-thaired"></i> บทความที่บันทึกไว้ในรายการโปรด (Saved Articles)
+                </h3>
+                <div id="saved-bookmarks-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- AUTHENTICATION MODAL (LOGIN & REGISTER) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl transform transition-all border border-thaigold/40">
+            
+            <!-- Modal Header -->
+            <div class="bg-thaidark text-white p-6 relative">
+                <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-7 h-7 rounded-full gold-gradient flex items-center justify-center text-thaidark font-bold text-xs">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <span class="text-base font-bold text-gold-gradient font-serif">มรดกสยาม</span>
+                </div>
+                <h3 id="modal-title" class="text-2xl font-bold font-serif">เข้าสู่ระบบ</h3>
+                <p id="modal-subtitle" class="text-xs text-stone-300">กรุณากรอกข้อมูลเพื่อเข้าใช้บริการเว็บไซต์มรดกสยาม</p>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="flex border-b border-stone-200 bg-stone-50">
+                <button id="tab-login-btn" onclick="switchTab('login')" class="flex-1 py-3 text-xs sm:text-sm font-semibold text-thaired border-b-2 border-thaired transition">
+                    เข้าสู่ระบบ
+                </button>
+                <button id="tab-register-btn" onclick="switchTab('register')" class="flex-1 py-3 text-xs sm:text-sm font-semibold text-stone-500 border-b-2 border-transparent hover:text-stone-800 transition">
+                    สมัครสมาชิก
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- LOGIN FORM -->
+                <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-stone-700 mb-1">อีเมล (Email)</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                            <input type="email" id="login-email" required placeholder="user@example.com" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-thaigold focus:outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-stone-700 mb-1">รหัสผ่าน (Password)</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-thaigold focus:outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-thaired hover:bg-thairedhover text-white font-semibold rounded-xl shadow-md transition text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+                    </button>
+                    
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-stone-200"></div>
+                        <span class="flex-shrink mx-4 text-[11px] text-stone-400">หรือทดลองใช้งานระบบ</span>
+                        <div class="flex-grow border-t border-stone-200"></div>
+                    </div>
+
+                    <!-- Quick Demo Login Button -->
+                    <button type="button" onclick="quickDemoLogin()" class="w-full py-2.5 bg-thaigoldlight/80 hover:bg-thaigold text-amber-950 font-semibold rounded-xl text-xs border border-thaigold/60 transition shadow-sm flex items-center justify-center gap-2">
+                        <span>⚡ Quick Demo Login (เข้าสู่ระบบทันที)</span>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-medium text-stone-700 mb-1">ชื่อ-นามสกุล (Full Name)</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                            <input type="text" id="reg-name" required placeholder="สมชาย รักไทย" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-thaigold focus:outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-stone-700 mb-1">อีเมล (Email)</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                            <input type="email" id="reg-email" required placeholder="user@example.com" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-thaigold focus:outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-stone-700 mb-1">รหัสผ่าน (Password)</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                            <input type="password" id="reg-password" required minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-thaigold focus:outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-thaigold hover:bg-yellow-500 text-thaidark font-semibold rounded-xl shadow-md transition text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-user-plus"></i> ยืนยันสมัครสมาชิก
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-thaidark text-stone-400 py-12 border-t border-thaigold/30 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+            <div class="flex justify-center items-center gap-3">
+                <div class="w-9 h-9 rounded-full gold-gradient flex items-center justify-center text-thaidark font-bold">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <span class="text-2xl font-bold text-gold-gradient font-serif">มรดกสยาม</span>
+            </div>
+            <p class="text-xs sm:text-sm max-w-lg mx-auto text-stone-400 leading-relaxed font-light">
+                เว็บไซต์รวบรวมและสืบสานมรดกทางวัฒนธรรมไทย เพื่อการศึกษาและเผยแพร่คุณค่าแห่งสยามประเทศสู่สากล
+            </p>
+            <div class="flex justify-center gap-6 text-stone-400 text-lg pt-2">
+                <a href="#" class="hover:text-thaigold transition"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-thaigold transition"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="hover:text-thaigold transition"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="text-[11px] text-stone-500 pt-6 border-t border-stone-800">
+                &copy; 2026 มรดกสยาม (Thai Cultural Heritage). สงวนลิขสิทธิ์ตามกฎหมาย
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Management variables
+        let currentUser = JSON.parse(localStorage.getItem('thai_culture_user')) || null;
+        let savedBookmarks = JSON.parse(localStorage.getItem('thai_culture_bookmarks')) || [];
+        let isVideoPlaying = false;
+        let videoProgressInterval = null;
+
+        // Article Data Source
+        const cultureDetails = {
+            'tom-yum': {
+                title: 'ต้มยำกุ้ง (Tom Yum Goong) - มรดกภูมิปัญญาทางวัฒนธรรม',
+                cat: 'อาหารไทย',
+                badgeBg: 'bg-thaired',
+                img: 'https://hot-thai-kitchen.com/wp-content/uploads/2013/03/tom-yum-goong-blog.jpg',
+                text: `ต้มยำกุ้ง เป็นหนึ่งในอาหารไทยที่มีชื่อเสียงโด่งดังไปทั่วโลก ด้วยรสชาติอันเป็นเอกลักษณ์ที่ผสมผสานความเผ็ด เปรี้ยว เค็ม และความหอมกลมกล่อมของสมุนไพรสดไทย\n\nส่วนผสมหลักประกอบด้วย กุ้งแม่น้ำสด ข่า ตะไคร้ ใบมะกรูด พริกขี้หนูสด มะนาว และน้ำปลาแท้ ซึ่งนอกจากรสชาติที่อร่อยลงตัวแล้ว สมุนไพรไทยในต้มยำกุ้งยังมีสรรพคุณทางยา ช่วยบำรุงสุขภาพและช่วยระบบย่อยอาหาร ถือเป็นตัวแทนความประณีตของศิลปะการปรุงอาหารไทย`
+            },
+            'khon': {
+                title: 'นาฏศิลป์โขนชั้นสูง - มรดกทางวัฒนธรรมที่จับต้องไม่ได้ของมนุษยชาติ',
+                cat: 'ศิลปะการแสดง',
+                badgeBg: 'bg-amber-600',
+                img: 'https://cdn.royalgrandpalace.th/images/attractive/khon/slide_1_4.jpg',
+                text: `การแสดงโขน เป็นนาฏศิลป์ชั้นสูงของไทยที่ได้รับการขึ้นทะเบียนจาก UNESCO ให้เป็นมรดกทางวัฒนธรรมที่จับต้องไม่ได้ของมนุษยชาติ (Intangible Cultural Heritage of Humanity)\n\nโขนเป็นการแสดงที่รวมศาสตร์และศิลป์หลากหลายแขนง ทั้งวรรณกรรม (เรื่องรามเกียรติ์) การพากย์และการเจรจา ดนตรีปี่พาทย์ งานศิราภรณ์ (หัวโขน) และพัสตราภรณ์ (เครื่องแต่งกายประดิดประดอย) รวมทั้งทักษะการเต้นรำตามจังหวะดนตรีอย่างเข้มงวด`
+            },
+            'loy-krathong': {
+                title: 'ประเพณีลอยกระทง & ยี่เป็ง - ศรัทธาและความงามแห่งสายน้ำ',
+                cat: 'ประเพณีไทย',
+                badgeBg: 'bg-emerald-700',
+                img: 'https://www.thailandretreats.com/imagefolder/BP062.jpgbig.jpg',
+                text: `ประเพณีลอยกระทง จัดขึ้นตรงกับวันเพ็ญ ขึ้น 15 ค่ำ เดือน 12 ของทุกปี เป็นประเพณีโบราณที่สืบทอดกันมาเพื่อขอขมาพระแม่คงคาที่ได้ใช้น้ำในการดำรงชีวิต และปล่อยความทุกข์โศกโรคภัยให้ลอยไปกับสายน้ำ\n\nนอกจากนี้ในภาคเหนือยังมีประเพณี "ยี่เป็ง" ที่มีการปล่อยโคมลอยขึ้นสู่ท้องฟ้า เป็นภาพแสงไฟส่องสว่างไสวสะท้อนความงดงามทางวัฒนธรรมไทยอย่างวิจิตรบรรจง`
+            },
+            'thai-silk': {
+                title: 'ผ้าไหมไทยมัดหมี่ - หัตถศิลป์แห่งภูมิปัญญา',
+                cat: 'ผ้าไทย & หัตถกรรม',
+                badgeBg: 'bg-purple-700',
+                img: 'https://thailandfoundation.or.th/wp-content/uploads/2025/08/1-Thai-Silk-DTH-Travel.jpg',
+                text: `ผ้าไหมไทย เป็นหนึ่งในหัตถกรรมที่มีชื่อเสียงระดับโลก โดดเด่นด้วยการมัดย้อมเส้นไหมและการทอด้วยมืออย่างประณีต\n\nกรรมวิธีการทอผ้าไหมมัดหมี่ต้องอาศัยทักษะและความอดทนสูง ทอเกิดเป็นลวดลายสะท้อนถึงวิถีชีวิต ธรรมชาติ และความเชื่อของท้องถิ่นไทย การส่งเสริมผ้าไทยช่วยอนุรักษ์ภูมิปัญญาชุมชนและสร้างอาชีพให้แก่ชาวบ้านอย่างยั่งยืน`
+            }
+        };
+
+        // Lifecycle Init
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUserUI();
+            updateBookmarkIconsUI();
+            renderSavedBookmarks();
+        });
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.className = 'fas fa-times';
+            } else {
+                menu.classList.add('hidden');
+                icon.className = 'fas fa-bars';
+            }
+        }
+
+        // Section View Switcher
+        function showSection(sec) {
+            if (sec === 'home') {
+                document.getElementById('sec-home').classList.remove('hidden');
+                document.getElementById('sec-dashboard').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (sec === 'dashboard') {
+                document.getElementById('sec-home').classList.add('hidden');
+                document.getElementById('sec-dashboard').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function scrollToCulture() {
+            showSection('home');
+            document.getElementById('culture-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkDashboardAccess() {
+            if (!currentUser) {
+                showToast('กรุณาล็อกอินเพื่อเข้าสู่ระบบสมาชิก', 'info');
+                openAuthModal('login');
+            } else {
+                showSection('dashboard');
+            }
+        }
+
+        // Update User UI Elements
+        function updateUserUI() {
+            const guestNav = document.getElementById('guest-nav');
+            const userNav = document.getElementById('user-nav');
+            const heroRegBtn = document.getElementById('hero-reg-btn');
+            const mobileGuest = document.getElementById('mobile-guest-actions');
+            const mobileUser = document.getElementById('mobile-user-actions');
+
+            if (currentUser) {
+                guestNav.classList.add('hidden');
+                userNav.classList.remove('hidden');
+                userNav.classList.add('flex');
+
+                if (mobileGuest) mobileGuest.classList.add('hidden');
+                if (mobileUser) mobileUser.classList.remove('hidden');
+
+                document.getElementById('user-display-name').innerText = currentUser.name;
+                document.getElementById('user-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+                document.getElementById('dash-user-name').innerText = currentUser.name;
+
+                if (document.getElementById('mobile-user-name')) {
+                    document.getElementById('mobile-user-name').innerText = currentUser.name;
+                    document.getElementById('mobile-user-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+                }
+
+                if (heroRegBtn) heroRegBtn.style.display = 'none';
+            } else {
+                guestNav.classList.remove('hidden');
+                userNav.classList.add('hidden');
+                userNav.classList.remove('flex');
+
+                if (mobileGuest) mobileGuest.classList.remove('hidden');
+                if (mobileUser) mobileUser.classList.add('hidden');
+
+                if (heroRegBtn) heroRegBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // Auth Modal Controls
+        function openAuthModal(tab = 'login') {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            switchTab(tab);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function switchTab(tab) {
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            const formLogin = document.getElementById('form-login');
+            const formRegister = document.getElementById('form-register');
+
+            if (tab === 'login') {
+                loginBtn.className = "flex-1 py-3 text-xs sm:text-sm font-semibold text-thaired border-b-2 border-thaired transition";
+                regBtn.className = "flex-1 py-3 text-xs sm:text-sm font-semibold text-stone-500 border-b-2 border-transparent hover:text-stone-800 transition";
+                formLogin.classList.remove('hidden');
+                formRegister.classList.add('hidden');
+                document.getElementById('modal-title').innerText = "เข้าสู่ระบบ";
+            } else {
+                regBtn.className = "flex-1 py-3 text-xs sm:text-sm font-semibold text-thaired border-b-2 border-thaired transition";
+                loginBtn.className = "flex-1 py-3 text-xs sm:text-sm font-semibold text-stone-500 border-b-2 border-transparent hover:text-stone-800 transition";
+                formRegister.classList.remove('hidden');
+                formLogin.classList.add('hidden');
+                document.getElementById('modal-title').innerText = "สมัครสมาชิกใหม่";
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            currentUser = {
+                name: email.split('@')[0],
+                email: email
+            };
+            localStorage.setItem('thai_culture_user', JSON.stringify(currentUser));
+            updateUserUI();
+            closeAuthModal();
+            showToast('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ!');
+            showSection('dashboard');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            currentUser = { name, email };
+            localStorage.setItem('thai_culture_user', JSON.stringify(currentUser));
+            updateUserUI();
+            closeAuthModal();
+            showToast('สมัครสมาชิกสำเร็จ!');
+            showSection('dashboard');
+        }
+
+        function quickDemoLogin() {
+            currentUser = {
+                name: "ผู้ใช้งานทดสอบ (Demo User)",
+                email: "demo@thaiculture.com"
+            };
+            localStorage.setItem('thai_culture_user', JSON.stringify(currentUser));
+            updateUserUI();
+            closeAuthModal();
+            showToast('เข้าสู่ระบบด้วยบัญชี Demo เรียบร้อย!');
+            showSection('dashboard');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('thai_culture_user');
+            updateUserUI();
+            showSection('home');
+            showToast('ออกจากระบบเรียบร้อยแล้ว', 'info');
+        }
+
+        // Category Filtering
+        function filterCategory(cat, btn) {
+            const cards = document.querySelectorAll('.culture-card');
+            const btns = document.querySelectorAll('.cat-btn');
+
+            btns.forEach(b => {
+                b.className = "cat-btn bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition";
+            });
+            btn.className = "cat-btn bg-thaired text-white px-5 py-2 rounded-full text-xs sm:text-sm font-medium shadow-md transition";
+
+            let count = 0;
+            cards.forEach(card => {
+                if (cat === 'all' || card.dataset.cat === cat) {
+                    card.style.display = 'flex';
+                    count++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('no-results').classList.toggle('hidden', count > 0);
+        }
+
+        // Live Search Handler
+        function filterCultureCards() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.culture-card');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            clearBtn.classList.toggle('hidden', query.length === 0);
+
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const title = card.dataset.title.toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('no-results').classList.toggle('hidden', visibleCount > 0);
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            filterCultureCards();
+        }
+
+        // Culture Detail Modal Handler
+        function openDetailModal(key) {
+            const item = cultureDetails[key];
+            if (!item) return;
+
+            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-cat-badge').innerText = item.cat;
+            document.getElementById('modal-cat-badge').className = `px-3.5 py-1 text-white text-xs rounded-full font-semibold ${item.badgeBg}`;
+            document.getElementById('modal-detail-title').innerText = item.title;
+            document.getElementById('modal-detail-body').innerText = item.text;
+
+            const modalBmBtn = document.getElementById('modal-bookmark-btn');
+            const isSaved = savedBookmarks.includes(key);
+            modalBmBtn.innerHTML = isSaved ? '<i class="fas fa-heart text-red-500"></i> บันทึกแล้ว' : '<i class="far fa-heart"></i> บันทึกในรายการโปรด';
+            modalBmBtn.onclick = (e) => { toggleBookmark(key, e); openDetailModal(key); };
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // Bookmark Logic
+        function toggleBookmark(key, e) {
+            if (e) e.stopPropagation();
+
+            const idx = savedBookmarks.indexOf(key);
+            if (idx > -1) {
+                savedBookmarks.splice(idx, 1);
+                showToast('ลบออกจากรายการโปรดแล้ว', 'info');
+            } else {
+                savedBookmarks.push(key);
+                showToast('บันทึกในรายการโปรดเรียบร้อย');
+            }
+
+            localStorage.setItem('thai_culture_bookmarks', JSON.stringify(savedBookmarks));
+            updateBookmarkIconsUI();
+            renderSavedBookmarks();
+        }
+
+        function updateBookmarkIconsUI() {
+            const cards = document.querySelectorAll('.culture-card');
+            cards.forEach(card => {
+                const key = card.dataset.key;
+                const iconBtn = card.querySelector('.bookmark-icon-btn');
+                if (iconBtn) {
+                    if (savedBookmarks.includes(key)) {
+                        iconBtn.className = "bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-thaired text-white flex items-center justify-center transition shadow";
+                        iconBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                    } else {
+                        iconBtn.className = "bookmark-icon-btn absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white hover:bg-thaigold hover:text-thaidark flex items-center justify-center transition";
+                        iconBtn.innerHTML = '<i class="far fa-bookmark"></i>';
+                    }
+                }
+            });
+
+            document.getElementById('dash-fav-count').innerText = savedBookmarks.length;
+        }
+
+        function renderSavedBookmarks() {
+            const container = document.getElementById('saved-bookmarks-container');
+            if (!container) return;
+
+            if (savedBookmarks.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-stone-400 text-xs sm:text-sm">
+                        <i class="far fa-bookmark text-2xl mb-2 block text-stone-300"></i>
+                        ยังไม่มีบทความในรายการโปรด กดปุ่มรูปหัวใจบนการ์ดมรดกวัฒนธรรมเพื่อบันทึกไว้ได้ที่นี่
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            savedBookmarks.forEach(key => {
+                const item = cultureDetails[key];
+                if (item) {
+                    html += `
+                        <div class="bg-stone-50 rounded-xl p-3 border border-stone-200 flex items-center gap-3 hover:border-thaigold transition">
+                            <img src="${item.img}" class="w-14 h-14 object-cover rounded-lg">
+                            <div class="flex-grow min-w-0">
+                                <h5 class="text-xs font-bold text-stone-800 truncate">${item.title}</h5>
+                                <span class="text-[10px] text-stone-500">${item.cat}</span>
+                            </div>
+                            <button onclick="toggleBookmark('${key}', event)" class="text-red-400 hover:text-red-600 p-1 text-xs">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        // Simulated Video Player Controls
+        function openVideoModal(title, poster, desc) {
+            document.getElementById('video-modal-title').innerText = title;
+            document.getElementById('video-modal-poster').src = poster;
+            document.getElementById('video-modal-desc').innerText = desc;
+            document.getElementById('video-modal').classList.remove('hidden');
+
+            // Reset player state
+            isVideoPlaying = false;
+            clearInterval(videoProgressInterval);
+            document.getElementById('video-progress').style.width = '0%';
+            document.getElementById('play-icon').className = 'fas fa-play ml-1';
+            document.getElementById('video-status-text').innerText = 'กดปุ่มเพื่อเริ่มเล่นสื่อวิดีโอระดับความคมชัด 4K';
+        }
+
+        function closeVideoModal() {
+            document.getElementById('video-modal').classList.add('hidden');
+            clearInterval(videoProgressInterval);
+            isVideoPlaying = false;
+        }
+
+        function toggleVideoPlayState() {
+            const playIcon = document.getElementById('play-icon');
+            const statusText = document.getElementById('video-status-text');
+            const progressBar = document.getElementById('video-progress');
+
+            if (!isVideoPlaying) {
+                isVideoPlaying = true;
+                playIcon.className = 'fas fa-pause';
+                statusText.innerText = 'กำลังเล่นสื่อสารคดีแบบความคมชัดสูง...';
+
+                let width = parseFloat(progressBar.style.width) || 0;
+                videoProgressInterval = setInterval(() => {
+                    width += 0.5;
+                    if (width > 100) width = 0;
+                    progressBar.style.width = width + '%';
+                }, 200);
+            } else {
+                isVideoPlaying = false;
+                playIcon.className = 'fas fa-play ml-1';
+                statusText.innerText = 'หยุดเล่นชั่วคราว';
+                clearInterval(videoProgressInterval);
+            }
+        }
+
+        // Toast Notification System
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const bgClass = type === 'success' ? 'bg-emerald-700 border-emerald-500' : 'bg-amber-700 border-amber-500';
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+
+            toast.className = `${bgClass} text-white px-5 py-3 rounded-xl shadow-2xl border flex items-center gap-3 text-xs sm:text-sm font-medium pointer-events-auto transition-all duration-300 transform translate-x-10 opacity-0`;
+            toast.innerHTML = `
+                <i class="fas ${iconClass} text-lg text-thaigold"></i>
+                <span>${msg}</span>
+            `;
+
+            container.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            }, 10);
+
+            // Animate out & remove
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
